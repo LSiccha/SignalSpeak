@@ -3,7 +3,7 @@
     <!--  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">-->
     <!--    <mat-icon>menu</mat-icon>-->
     <!--  </button>-->
-    <img style="width: 80px;" src="/assets/img/logo.png">
+    <img [routerLink]="['/tools']" style="width: 80px;" src="/assets/img/logo.png">
     <!--  <span>Signal Speak</span>-->
     <span class="spacer"></span>
     <ng-container *ngIf="true; then unaothorized; else authorized">
