@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {GlobalLayoutComponent} from './layouts/global-layout/global-layout.component';
-import {RouterOutlet} from "@angular/router";
+import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 import {UiModule} from "../ui/ui.module";
 
 
@@ -15,7 +15,9 @@ import {UiModule} from "../ui/ui.module";
   imports: [
     CommonModule,
     RouterOutlet,
-    UiModule
+    UiModule,
+    RouterLink,
+    RouterLinkActive
   ]
 })
 export class CoreModule {

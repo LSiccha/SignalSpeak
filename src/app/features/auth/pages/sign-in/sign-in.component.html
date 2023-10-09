@@ -8,7 +8,7 @@
     <app-sign-in-form></app-sign-in-form>
     <mat-divider style="margin-top: 30px;"></mat-divider>
     <div style="padding: 30px; display: flex; justify-content: center; align-items: center">
-      <span>¿No tienes una cuenta? <mat-chip color="primary" highlighted>Registrate</mat-chip></span>
+      <span>¿No tienes una cuenta?  <a [routerLink]="['/auth/sign-up']"><mat-chip color="primary" highlighted>Registrate</mat-chip></a></span>
     </div>
   </mat-card-content>
 </mat-card>

@@ -30,8 +30,8 @@
 
 <ng-template #unaothorized>
   <div style="display: flex; width: 350px; gap:5px;">
-    <button style="flex: 1 1 0px;" mat-stroked-button>Iniciar Sesión</button>
-    <button style="flex: 1 1 0px;" mat-raised-button color="primary">Registrate</button>
+    <button [routerLink]="['/auth/sign-in']" routerLinkActive #rla="routerLinkActive" [disabled]="rla.isActive" style="flex: 1 1 0px;" mat-stroked-button>Iniciar Sesión</button>
+    <button [routerLink]="['/auth/sign-up']" routerLinkActive #rlau="routerLinkActive" [disabled]="rlau.isActive" style="flex: 1 1 0px;" mat-raised-button color="primary">Registrate</button>
   </div>
 </ng-template>
 <ng-template #authorized>
