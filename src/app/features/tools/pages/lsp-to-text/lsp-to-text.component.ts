@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 import {LayersModel} from "@tensorflow/tfjs";
 import * as handpose from "@tensorflow-models/hand-pose-detection";
@@ -11,6 +11,7 @@ import {HandDetector} from "@tensorflow-models/hand-pose-detection";
   styleUrls: ['./lsp-to-text.component.css']
 })
 export class LspToTextComponent implements OnInit, AfterViewInit {
+  @Output() onCharDetected = new EventEmitter();
   @ViewChild('canvas', {static: true}) canvasRef!: ElementRef<HTMLCanvasElement>;
   video!: HTMLVideoElement;
   handModel!: HandDetector;
@@ -28,38 +29,6 @@ export class LspToTextComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-  }
-
-  async drawHandFrame(ctx: CanvasRenderingContext2D) {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-    if (this.currentHandFrame) {
-      const predictions = await this.handModel.estimateHands(this.video);
-      if (predictions && predictions.length > 0) {
-        const handLandmarks = predictions[0].keypoints;
-        console.log(handLandmarks)
-        const minX = Math.min(...handLandmarks.map(point => point.x));
-        const minY = Math.min(...handLandmarks.map(point => point.y));
-        const maxX = Math.max(...handLandmarks.map(point => point.x));
-        const maxY = Math.max(...handLandmarks.map(point => point.y));
-
-        ctx.fillStyle = 'red';
-        for (const point of handLandmarks) {
-          ctx.beginPath();
-          ctx.arc(point.x, point.y, 8, 0, 2 * Math.PI);
-          ctx.fill();
-        }
-
-        // Calcular el ancho y la altura del rectángulo
-        const width = maxX - minX;
-        const height = maxY - minY;
-
-// Dibujar el rectángulo
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(minX - 40, minY - 40, (maxX + 80) - minX, (maxY + 80) - minY);
-      }
-    }
   }
 
   async drawHand(ctx: CanvasRenderingContext2D, handLandmarks: handpose.Keypoint[]) {
@@ -104,18 +73,11 @@ export class LspToTextComponent implements OnInit, AfterViewInit {
             // @ts-ignore
             this.captureHandFrame(ctx);
             this.detectHandFrame();
+            this.currentHandFrame = null;
             // @ts-ignore
-            // this.drawHandFramctxe();
           }, 1000);
         }
       })
-  }
-
-  captureFrame() {
-    const inputData = tf.browser.fromPixels(this.video);
-    // @ts-ignore
-    this.currentFrame = tf.image.resizeBilinear(inputData, [64, 64]).reshape([1, 64, 64, 3]);
-    console.log(this.currentHandFrame);
   }
 
   async loadModel() {
@@ -173,7 +135,7 @@ export class LspToTextComponent implements OnInit, AfterViewInit {
 
       const characters = [
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-        'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+        'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '', '', ' '
       ];
       // @ts-ignore
       const predictedClass = tf.argMax(prediction, 1).dataSync()[0];
@@ -183,6 +145,8 @@ export class LspToTextComponent implements OnInit, AfterViewInit {
       console.log("Label predicho:", predictedLabel);
 
       console.log(prediction);
+      this.onCharDetected.emit(predictedLabel);
+      this.output += predictedLabel;
       // Imprime las probabilidades para cada clase
       // for (let i = 0; i < probabilities.length; i++) {
       //   const label = characters[i] || `Clase ${i}`;
@@ -191,6 +155,10 @@ export class LspToTextComponent implements OnInit, AfterViewInit {
     } else {
       console.log('No hay frame de la mano para procesar.');
     }
+  }
+
+  clear() {
+    this.output = '';
   }
 
 }
